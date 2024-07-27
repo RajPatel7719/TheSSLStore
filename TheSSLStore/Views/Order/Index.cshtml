@@ -1,0 +1,92 @@
+﻿@model TheSSLStore.Models.OrderViewModel
+@{
+    ViewData["Title"] = "The SSL Store Orders";
+
+    var totalPages = Model.TotalPages;
+    var currentPage = Model.CurrentPage;
+
+    var startPage = Math.Max(1, currentPage - 2);
+    var endPage = Math.Min(totalPages, currentPage + 2);
+
+    if (endPage - startPage < 4)
+    {
+        if (startPage == 1)
+        {
+            endPage = Math.Min(totalPages, startPage + 4);
+        }
+        else if (endPage == totalPages)
+        {
+            startPage = Math.Max(1, endPage - 4);
+        }
+    }
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="table-responsive">
+    <table id="ordersTable" class="table">
+        <thead>
+            <tr class="text-center">
+                <th>TheSSLStoreOrderID</th>
+                <th>VendorOrderId</th>
+                <th>ProductName</th>
+                <th>Validity</th>
+                <th>MajorStatus</th>
+                <th>CommonName</th>
+                <th>OrderAmount</th>
+                <th>PurchaseDate</th>
+                <th>Token</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Orders.Length > 1)
+            {
+                @foreach (var order in Model.Orders)
+                {
+                    <tr>
+                        <td>@order.TheSSLStoreOrderID</td>
+                        <td>@order.VendorOrderId</td>
+                        <td>@order.ProductName</td>
+                        <td>@order.Validity</td>
+                        <td>@order.OrderStatus.MajorStatus</td>
+                        <td>@order.CommonName</td>
+                        <td>@order.OrderAmount</td>
+                        <td>@order.PurchaseDate</td>
+                        <td>@order.Token</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="9">
+                        <p class="text-center">No Data Found</p>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="pagination m-5">
+        @if (Model.Orders.Any())
+        {
+            <a class="btn btn-secondary @(currentPage == 1 ? "disabled" : "")" asp-action="Index" asp-route-pageNumber="@(currentPage - 1)">Previous</a>
+
+            @if (startPage > 1)
+            {
+                <a class="text-decoration-none text-black m-2" asp-action="Index" asp-route-pageNumber="1">1</a>
+                @if (startPage > 2)
+                {
+                    <span class="m-2">...</span>
+                }
+            }
+
+            @for (int i = startPage; i <= endPage; i++)
+            {
+                <a class="text-decoration-none text-black m-2 @(currentPage == i ? "active-page" : "")" asp-action="Index" asp-route-pageNumber="@i">@i</a>
+            }
+
+            <a class="btn btn-secondary @(currentPage == totalPages ? "disabled" : "")" asp-action="Index" asp-route-pageNumber="@(currentPage + 1)">Next</a>
+        }
+    </div>
+</div>
